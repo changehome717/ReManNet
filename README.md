@@ -22,13 +22,13 @@
   <img src="https://img.shields.io/badge/Status-3D--TLIoU%20Released-brightgreen" alt="Status">
 </p>
 
-<p align="center">
+<!-- <p align="center">
   Official repository of <b>ReManNet</b>, a <b>CVPR 2026</b> paper for monocular 3D lane detection.
 </p>
 
 <p align="center">
   <b>3D-TLIoU loss is now released. Full ReManNet code will be released progressively.</b>
-</p>
+</p> -->
 ## News
 
 - **[2026]** The ReManNet paper is available on arXiv.

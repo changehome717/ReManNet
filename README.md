@@ -102,7 +102,7 @@ Different from conventional point-wise regression losses that supervise each sam
 ### Spatial View
 
 <p align="center">
-  <img src="assets/3d-tube.png" width="200">
+  <img src="assets/3d-tube.png" width="400">
 </p>
 
 <p align="center">
@@ -116,7 +116,7 @@ This design provides a more holistic supervision signal for 3D lane prediction b
 ### Slice View
 
 <p align="center">
-  <img src="assets/3D-TLIOUv2.png" width="160">
+  <img src="assets/3D-TLIOUv2.png" width="320">
 </p>
 
 <p align="center">

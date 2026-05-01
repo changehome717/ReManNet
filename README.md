@@ -322,14 +322,6 @@ ReManNet/
 ---
 -->
 
-## Paper
-
-The paper is available at:
-
-[ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection](https://arxiv.org/abs/2603.19776)
-
----
-
 ## Citation
 
 If you find this project useful for your research, please consider starring this repository and citing our work:

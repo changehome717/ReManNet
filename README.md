@@ -335,11 +335,11 @@ The paper is available at:
 If you find this project useful for your research, please consider starring this repository and citing our work:
 
 ```bibtex
-@article{hong2026remannet,
-  title   = {ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection},
-  author  = {Hong, Chengzhi and Li, Bijun},
-  journal = {arXiv preprint arXiv:2603.19776},
-  year    = {2026}
+@inproceedings{hong2026remannet,
+  title     = {ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection},
+  author    = {Hong, Chengzhi and Li, Bijun},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year      = {2026}
 }
 ```
 

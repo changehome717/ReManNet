@@ -5,26 +5,34 @@
 </p>
 
 <p align="center">
-  <a href="https://arxiv.org/abs/2603.19776">
-    <img src="https://img.shields.io/badge/Paper-arXiv-red" alt="Paper">
-  </a>
-  <a href="https://github.com/changehome717/ReManNet">
-    <img src="https://img.shields.io/badge/Code-ReManNet-blue" alt="Code">
-  </a>
-  <img src="https://img.shields.io/badge/Task-Monocular%203D%20Lane%20Detection-green" alt="Task">
-  <img src="https://img.shields.io/badge/Framework-PyTorch-orange" alt="Framework">
+  <font size="5"><b>Accepted by CVPR 2026</b></font>
 </p>
 
 <p align="center">
-  Official repository of <b>ReManNet</b>, a Riemannian manifold network for monocular 3D lane detection.
+  <a href="https://cvpr.thecvf.com/">
+    <img src="https://img.shields.io/badge/CVPR-2026-ff6f00?style=for-the-badge" alt="CVPR 2026">
+  </a>
+  <a href="https://arxiv.org/abs/2603.19776">
+    <img src="https://img.shields.io/badge/arXiv-2603.19776-b31b1b?style=for-the-badge" alt="arXiv">
+  </a>
+  <a href="https://github.com/changehome717/ReManNet">
+    <img src="https://img.shields.io/badge/Code-ReManNet-blue?style=for-the-badge" alt="Code">
+  </a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Task-Monocular%203D%20Lane%20Detection-green" alt="Task">
+  <img src="https://img.shields.io/badge/Framework-PyTorch-orange" alt="Framework">
+  <img src="https://img.shields.io/badge/Status-3D--TLIoU%20Released-brightgreen" alt="Status">
+</p>
+
+<p align="center">
+  Official repository of <b>ReManNet</b>, a <b>CVPR 2026</b> paper for monocular 3D lane detection.
 </p>
 
 <p align="center">
   <b>3D-TLIoU loss is now released. Full ReManNet code will be released progressively.</b>
 </p>
-
----
-
 ## News
 
 - **[2026]** The ReManNet paper is available on arXiv.

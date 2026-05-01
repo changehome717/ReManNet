@@ -25,6 +25,11 @@
 
 - **[2026]** ReManNet is released for monocular 3D lane detection.
 - Code, configurations, pretrained models, and visualization tools will be updated progressively.
+- The paper is available at:
+
+[ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection](https://arxiv.org/abs/2603.19776)
+
+---
 
 ---
 
@@ -79,25 +84,28 @@ ReManNet encodes local lane geometry as Riemannian Gaussian descriptors on the s
 
 A lightweight gate adaptively fuses visual features and manifold-based geometric descriptors. The visual stream provides image evidence, while the geometric stream supplies structure-aware correction for coherent 3D reasoning.
 
-### 3D Tunnel Lane IoU Loss
-
-We propose the 3D Tunnel Lane IoU Loss, a geometry-consistent objective that measures slice-wise overlap of tubular neighborhoods along each lane. It provides shape-level supervision beyond conventional point-wise regression losses.
-
----
-
 ## 3D Tunnel Lane IoU Loss
 
-The proposed 3D-TLIoU loss supervises 3D lane prediction from both positional and directional perspectives.
+We currently release the implementation of **3D Tunnel Lane IoU Loss (3D-TLIoU)**, a plug-and-play geometry-consistent supervision term for ordered 3D lane point sequences.
 
-Given a predicted lane and a ground-truth lane, we construct local tunnel intervals around sampled points and compute their slice-wise overlap. In our implementation, the intersection term is intentionally allowed to be negative when the predicted and ground-truth tunnel intervals are disjoint.
+Different from conventional point-wise regression losses that independently penalize each sampled point, 3D-TLIoU treats a lane as a continuous 3D curve and evaluates the shape-level consistency between predicted and ground-truth lane sequences. For each sampled longitudinal position, it constructs local tunnel neighborhoods around the predicted and ground-truth lane points and computes a slice-wise overlap surrogate. The loss then aggregates these slice-wise geometric overlaps together with local directional consistency, encouraging both accurate point localization and coherent curve alignment.
 
-```python
-# Negative intersection is preserved as a distance-aware penalty
-# when the predicted and ground-truth tunnel intervals are disjoint.
-intersection = inter_right - inter_left
-```
+<p align="center">
+  <img src="assets/3dtliou.png" width="800">
+</p>
 
-This design allows the loss to penalize predictions that move farther away from the ground-truth tunnel, rather than simply truncating all disjoint cases to zero overlap.
+<p align="center">
+  <em>Illustration of the proposed 3D-TLIoU loss. Please place the schematic figure at <code>assets/3dtliou.png</code>.</em>
+</p>
+
+Given a predicted 3D lane and its corresponding ground truth, 3D-TLIoU measures the discrepancy from two complementary perspectives:
+
+- **Tunnel overlap consistency**, which evaluates whether predicted lane points remain within the local 3D neighborhood of the ground-truth lane.
+- **Directional consistency**, which regularizes the local tangent direction of the predicted lane curve.
+
+The slice-wise overlap term is formulated as a signed tunnel-overlap surrogate. When the predicted and ground-truth tunnel neighborhoods overlap, the term behaves similarly to an IoU-style alignment objective. When they are disjoint, the signed overlap is allowed to become negative, which explicitly reflects the separation between the two tunnel regions. This design provides a stronger distance-aware penalty for predictions that move far away from the ground-truth lane, instead of treating all non-overlapping cases equally.
+
+This makes 3D-TLIoU especially suitable for supervising ordered 3D lane points, where maintaining global curve coherence is as important as minimizing local coordinate errors.
 
 ---
 

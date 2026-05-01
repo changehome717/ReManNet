@@ -102,7 +102,7 @@ Different from conventional point-wise regression losses that supervise each sam
 ### Spatial View
 
 <p align="center">
-  <img src="assets/3d-tube.png" width="800">
+  <img src="assets/3d-tube.png" width="200">
 </p>
 
 <p align="center">
@@ -116,7 +116,7 @@ This design provides a more holistic supervision signal for 3D lane prediction b
 ### Slice View
 
 <p align="center">
-  <img src="assets/3D-TLIOUv2.png" width="650">
+  <img src="assets/3D-TLIOUv2.png" width="160">
 </p>
 
 <p align="center">
@@ -172,7 +172,7 @@ ReManNet achieves strong performance in challenging scenarios, including:
 - intersections,
 - merge and split scenarios.
 
-Compared with the baseline, ReManNet improves the OpenLane F1 score by **+8.2%**, and surpasses the previous best method by **+1.8%**.
+Compared with the baseline, ReManNet improves the OpenLane F1 score by **+8.2%**, and surpasses the previous best method Glane3D by **+1.8%**.
 
 ---
 

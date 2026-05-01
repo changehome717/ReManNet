@@ -1,10 +1,6 @@
 # ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection
 
 <p align="center">
-  <b>ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection</b>
-</p>
-
-<p align="center">
   <font size="5"><b>Accepted by CVPR 2026</b></font>
 </p>
 

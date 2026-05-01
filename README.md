@@ -116,7 +116,7 @@ This design provides a more holistic supervision signal for 3D lane prediction b
 ### Slice View
 
 <p align="center">
-  <img src="assets/3D-TLIOUv2.png" width="320">
+  <img src="assets/3D-TLIOUv2.png" width="400">
 </p>
 
 <p align="center">

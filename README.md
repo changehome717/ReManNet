@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="./paper/ReManNet.pdf">
-    <img src="https://img.shields.io/badge/Paper-PDF-red" alt="Paper">
+  <a href="https://arxiv.org/abs/2603.19776">
+    <img src="https://img.shields.io/badge/Paper-arXiv-red" alt="Paper">
   </a>
   <a href="https://github.com/changehome717/ReManNet">
     <img src="https://img.shields.io/badge/Code-ReManNet-blue" alt="Code">
@@ -16,20 +16,24 @@
 </p>
 
 <p align="center">
-  Official implementation of <b>ReManNet</b>, a Riemannian manifold network for monocular 3D lane detection.
+  Official repository of <b>ReManNet</b>, a Riemannian manifold network for monocular 3D lane detection.
+</p>
+
+<p align="center">
+  <b>3D-TLIoU loss is now released. Full ReManNet code will be released progressively.</b>
 </p>
 
 ---
 
 ## News
 
-- **[2026]** ReManNet is released for monocular 3D lane detection.
-- Code, configurations, pretrained models, and visualization tools will be updated progressively.
-- The paper is available at:
+- **[2026]** The ReManNet paper is available on arXiv.
+- **[2026]** The implementation of **3D Tunnel Lane IoU Loss (3D-TLIoU)** is released.
+- The full ReManNet codebase, including Riemannian manifold modules, training configurations, evaluation scripts, and pretrained models, will be released progressively.
+
+Paper:
 
 [ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection](https://arxiv.org/abs/2603.19776)
-
----
 
 ---
 
@@ -48,17 +52,16 @@ Based on this formulation, ReManNet encodes lane geometry as Riemannian Gaussian
 ## Framework
 
 <p align="center">
-  <img src="assets/framework.png" width="900">
+  <img src="assets/SPD_network.png" width="950">
 </p>
 
-The overall pipeline of ReManNet contains the following stages:
+<p align="center">
+  <em>Overall architecture of ReManNet.</em>
+</p>
 
-1. A monocular image is processed by an image backbone and detection head to generate initial 3D lane predictions.
-2. The predicted lane points are fed into a position-weighted geometric encoder.
-3. Local lane geometry is summarized as Riemannian Gaussian descriptors on the SPD manifold.
-4. Manifold descriptors are mapped to compact Euclidean features through logarithmic mapping and projection.
-5. A gated visual-geometric fusion module combines visual features and geometric descriptors.
-6. The final predictions are supervised by classification, coordinate regression, and the proposed 3D-TLIoU loss.
+ReManNet follows a visual-geometric refinement pipeline for monocular 3D lane detection. Given a single front-view image, the backbone and transformer layer first extract visual features and generate initial 3D lane predictions. The predicted lane points are then processed by a position-weighted layer and further encoded by a Riemannian manifold embedding layer to obtain geometry-aware descriptors.
+
+The resulting geometric descriptors are fused with visual features through a gated feature fusion layer, enabling the network to refine 3D lane predictions with both image evidence and manifold-based geometric consistency. The model is supervised by standard classification and regression objectives together with the proposed 3D-TLIoU loss.
 
 ---
 
@@ -84,28 +87,67 @@ ReManNet encodes local lane geometry as Riemannian Gaussian descriptors on the s
 
 A lightweight gate adaptively fuses visual features and manifold-based geometric descriptors. The visual stream provides image evidence, while the geometric stream supplies structure-aware correction for coherent 3D reasoning.
 
+### 3D Tunnel Lane IoU Loss
+
+We propose 3D-TLIoU, a geometry-consistent supervision objective for ordered 3D lane point sequences. It improves supervision from independent point-wise regression to curve-level alignment by considering both tunnel overlap and local directional consistency.
+
+---
+
 ## 3D Tunnel Lane IoU Loss
 
 We currently release the implementation of **3D Tunnel Lane IoU Loss (3D-TLIoU)**, a plug-and-play geometry-consistent supervision term for ordered 3D lane point sequences.
 
-Different from conventional point-wise regression losses that independently penalize each sampled point, 3D-TLIoU treats a lane as a continuous 3D curve and evaluates the shape-level consistency between predicted and ground-truth lane sequences. For each sampled longitudinal position, it constructs local tunnel neighborhoods around the predicted and ground-truth lane points and computes a slice-wise overlap surrogate. The loss then aggregates these slice-wise geometric overlaps together with local directional consistency, encouraging both accurate point localization and coherent curve alignment.
+Different from conventional point-wise regression losses that supervise each sampled point independently, 3D-TLIoU treats a lane as a structured 3D curve and measures the shape-level consistency between predicted and ground-truth lane sequences. It constructs local tunnel neighborhoods along the lane and evaluates their slice-wise overlap, thereby encouraging both accurate point localization and coherent curve alignment.
+
+### Spatial View
 
 <p align="center">
-  <img src="assets/3dtliou.png" width="800">
+  <img src="assets/3d-tube.png" width="800">
 </p>
 
 <p align="center">
-  <em>Illustration of the proposed 3D-TLIoU loss. Please place the schematic figure at <code>assets/3dtliou.png</code>.</em>
+  <em>Spatial illustration of 3D-TLIoU along ordered 3D lane points.</em>
 </p>
 
-Given a predicted 3D lane and its corresponding ground truth, 3D-TLIoU measures the discrepancy from two complementary perspectives:
+In the spatial view, the predicted lane points and ground-truth lane points form two ordered 3D point sequences. Around each sampled point, a local tunnel neighborhood is constructed. Instead of only measuring the coordinate error between isolated points, 3D-TLIoU evaluates the overlap relationship between the predicted and ground-truth tunnel regions along the lane sequence.
 
-- **Tunnel overlap consistency**, which evaluates whether predicted lane points remain within the local 3D neighborhood of the ground-truth lane.
-- **Directional consistency**, which regularizes the local tangent direction of the predicted lane curve.
+This design provides a more holistic supervision signal for 3D lane prediction because it jointly considers local point proximity, lane-wise continuity, and the spatial consistency of the whole curve.
 
-The slice-wise overlap term is formulated as a signed tunnel-overlap surrogate. When the predicted and ground-truth tunnel neighborhoods overlap, the term behaves similarly to an IoU-style alignment objective. When they are disjoint, the signed overlap is allowed to become negative, which explicitly reflects the separation between the two tunnel regions. This design provides a stronger distance-aware penalty for predictions that move far away from the ground-truth lane, instead of treating all non-overlapping cases equally.
+### Slice View
 
-This makes 3D-TLIoU especially suitable for supervising ordered 3D lane points, where maintaining global curve coherence is as important as minimizing local coordinate errors.
+<p align="center">
+  <img src="assets/3D-TLIOUv2.png" width="650">
+</p>
+
+<p align="center">
+  <em>Slice-wise tunnel-overlap surrogate in the plane {Y = Y<sub>i</sub>}.</em>
+</p>
+
+For each sampled longitudinal position, 3D-TLIoU evaluates the relationship between the predicted point and the ground-truth point in the corresponding slice plane. The red circle denotes the tunnel neighborhood around the predicted point, while the green circle denotes the tunnel neighborhood around the ground-truth point.
+
+The overlap distance measures the shared region between two tunnel neighborhoods, while the union distance measures their overall coverage. When the two tunnel neighborhoods overlap, the formulation behaves as an IoU-style geometric alignment objective. When they are disjoint, the signed overlap term is allowed to become negative, explicitly reflecting the separation between the predicted and ground-truth tunnel regions.
+
+This signed formulation is intentional. It avoids treating all non-overlapping cases equally and provides a stronger distance-aware penalty when predictions move farther away from the ground-truth lane. As a result, 3D-TLIoU can improve the supervision quality of ordered 3D lane points with minimal changes to existing training pipelines.
+
+---
+
+## Current Release
+
+This repository currently releases the implementation of **3D-TLIoU loss**.
+
+| Component | Status | Description |
+|---|---|---|
+| 3D-TLIoU Loss | Released | Plug-and-play geometric supervision for ordered 3D lane point sequences |
+| Riemannian Gaussian Geometry Module | Coming soon | SPD-manifold-based geometric descriptor encoding |
+| Gated Visual-Geometric Fusion | Coming soon | Adaptive fusion of visual and manifold geometric features |
+| Training and Evaluation Code | Coming soon | Full pipeline for OpenLane and ApolloSim |
+| Pretrained Models | Coming soon | Checkpoints for reproduced benchmark results |
+
+The released 3D-TLIoU loss can be integrated into existing monocular 3D lane detection frameworks or general 3D point-sequence regression models. It is designed to enhance the supervision of ordered 3D point sequences by introducing curve-level geometric alignment, while requiring only minimal modifications to the original training pipeline.
+
+The full ReManNet codebase, including the Riemannian manifold modules, visual-geometric fusion components, training configurations, evaluation scripts, and pretrained models, will be released progressively.
+
+Please consider **starring** and **watching** this repository to receive updates when the complete implementation is available.
 
 ---
 
@@ -232,30 +274,6 @@ bash tools/dist_test.sh configs/remannet/remannet_openlane_r50.py \
 ---
 -->
 
-## Current Release
-
-We currently release the implementation of **3D Tunnel Lane IoU Loss (3D-TLIoU)** for ordered 3D lane point supervision.
-
-The released loss can be easily integrated into existing 3D lane detection or 3D point-sequence regression frameworks. It provides shape-level supervision by jointly considering point-wise proximity and local directional consistency along the lane sequence. Compared with conventional independent point-wise regression losses, 3D-TLIoU encourages more coherent curve-level alignment and can improve the supervision quality of 3D sequential points with minimal modification to existing training pipelines.
-
-The full ReManNet codebase, including the Riemannian manifold geometry modules, visual-geometric fusion components, training configurations, evaluation scripts, and pretrained models, will be released progressively.
-
-Please consider **starring** and **watching** this repository to receive updates when the complete implementation is available.
-
----
-
-## Released Components
-
-| Component | Status | Description |
-|---|---|---|
-| 3D-TLIoU Loss | Released | Geometry-consistent supervision for ordered 3D lane point sequences |
-| Riemannian Gaussian Geometry Module | Coming soon | SPD-manifold-based geometric descriptor encoding |
-| Gated Visual-Geometric Fusion | Coming soon | Adaptive fusion of visual and manifold geometric features |
-| Training and Evaluation Code | Coming soon | Full pipeline for OpenLane and ApolloSim |
-| Pretrained Models | Coming soon | Checkpoints for reproduced benchmark results |
-
----
-
 <!--
 ## Visualization
 
@@ -304,18 +322,44 @@ ReManNet/
 ---
 -->
 
+## Paper
+
+The paper is available at:
+
+[ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection](https://arxiv.org/abs/2603.19776)
+
+---
+
 ## Citation
 
 If you find this project useful for your research, please consider starring this repository and citing our work:
 
 ```bibtex
-@inproceedings{hong2026remannet,
-  title     = {ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection},
-  author    = {Hong, Chengzhi and Li, Bijun},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  year      = {2026}
+@article{hong2026remannet,
+  title   = {ReManNet: A Riemannian Manifold Network for Monocular 3D Lane Detection},
+  author  = {Hong, Chengzhi and Li, Bijun},
+  journal = {arXiv preprint arXiv:2603.19776},
+  year    = {2026}
 }
 ```
+
+---
+
+## Acknowledgement
+
+This project is developed based on the monocular 3D lane detection research community.
+
+We sincerely thank the authors of OpenLane, ApolloSim, Anchor3DLane, PersFormer, LATR, GLane3D, and other related works for their valuable contributions to 3D lane detection research.
+
+If this project uses or modifies code from existing open-source projects, please follow their original licenses and citation requirements.
+
+---
+
+## License
+
+This repository is released for academic research purposes.
+
+Please refer to the `LICENSE` file for detailed terms.
 
 ---
 
